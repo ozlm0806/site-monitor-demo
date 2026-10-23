@@ -1,0 +1,87 @@
+{
+  "version": 1,
+  "updatedAt": "2026-10-23T21:30:00+08:00",
+  "company": "示範營造股份有限公司",
+  "systemName": "工地環境安全即時監控系統",
+  "settings": {
+    "cwaApiKey": "CWA-6E6F3529-E035-4B7D-A14B-727F210C7BC7",
+    "refreshMinutes": 5,
+    "github": {
+      "owner": "ozlm0806",
+      "repo": "site-monitor-demo",
+      "branch": "main",
+      "path": "data/config.json"
+    },
+    "thresholds": {
+      "windAvgWarn": 7,
+      "windAvgStop": 10,
+      "gustWarn": 10,
+      "gustStop": 15,
+      "rainNowWarn": 0.5,
+      "rainNowStop": 10,
+      "rain12hWarn": 10,
+      "rain12hStop": 50,
+      "dayHeavy": 80,
+      "dayTorrential": 200,
+      "paintRhWarn": 80,
+      "paintRhStop": 85,
+      "quakeStopIntensity": 4
+    },
+    "demo": {
+      "enabled": true,
+      "user": "demo",
+      "password": "demo1234",
+      "contactText": "想要貴公司專屬的工地監控系統？歡迎洽詢客製化建置",
+      "contactUrl": "https://ozlm0806.github.io/eng-tools-shop/"
+    }
+  },
+  "admins": [
+    {
+      "user": "admin",
+      "name": "系統管理者",
+      "salt": "e75e0d5ca6415f8b",
+      "hash": "a3ac6a1d15eb05894c1a679399156f826078f652b1ab3023a6248b6ec49bc903",
+      "mustChange": false
+    },
+    {
+      "user": "demo",
+      "name": "試用帳號",
+      "salt": "e488d89067d099c0",
+      "hash": "13848631ffb05fd72dae45b3dba28cd9e016268a03b8850350fba8d3a20d26d1",
+      "mustChange": false,
+      "demo": true
+    }
+  ],
+  "sites": [
+    {
+      "id": "site-airport",
+      "name": "示範工地－臺東豐年機場",
+      "code": "DEMO-001",
+      "county": "臺東縣",
+      "address": "臺東縣臺東市民航路 1100 號（臺東航空站）",
+      "lat": 22.755659,
+      "lon": 121.107107,
+      "manager": "王主任",
+      "phone": "",
+      "startDate": "2026-03-01",
+      "endDate": "2027-06-30",
+      "note": "示範資料",
+      "enabled": true
+    },
+    {
+      "id": "site-court",
+      "name": "示範工地－臺東地方法院",
+      "code": "DEMO-002",
+      "county": "臺東縣",
+      "address": "臺東縣臺東市博愛路 128 號",
+      "lat": 22.761803,
+      "lon": 121.152902,
+      "manager": "林主任",
+      "phone": "",
+      "startDate": "2026-05-15",
+      "endDate": "2027-12-31",
+      "note": "示範資料",
+      "enabled": true
+    }
+  ]
+}

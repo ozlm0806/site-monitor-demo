@@ -1,0 +1,23 @@
+{
+  "name": "示範營造 工地環境安全即時監控系統",
+  "short_name": "示範工地監控",
+  "description": "降雨、熱危害、風速、地震、雷達回波與 Windy 圖資，工地作業安全即時研判。",
+  "id": "./",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "any",
+  "background_color": "#23252b",
+  "theme_color": "#23252b",
+  "lang": "zh-Hant-TW",
+  "categories": ["weather", "productivity", "utilities"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "管理後台", "url": "./admin.html", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

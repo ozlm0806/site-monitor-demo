@@ -1,0 +1,35 @@
+/* 管理後台 */
+.admin { max-width: 1200px; }
+.admin-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.admin-head .toolbar { align-items: center; }
+.dirty { color: var(--yellow); font-weight: 700; font-size: 13px; }
+.login { max-width: 380px; margin: 40px auto; display: flex; flex-direction: column; gap: 12px; }
+.login h2 { margin: 0; }
+.admin-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.admin-tabs .tab { padding: 8px 14px; font-size: 14px; }
+.tabpane { display: flex; flex-direction: column; gap: 10px; }
+.form-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; align-items: end; }
+.form-grid .span2 { grid-column: span 2; }
+.form-grid .span3 { grid-column: span 3; }
+.chk { display: flex; align-items: center; gap: 6px; font-size: 14px; }
+.form-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.map-tools { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 12px 0 8px; }
+.inp { background: var(--card); border: 1px solid var(--line); border-radius: 7px; padding: 7px 9px; color: var(--text); flex: 1 1 220px; }
+.map { height: 380px; border-radius: 8px; z-index: 0; }
+.site-list { display: flex; flex-direction: column; gap: 6px; }
+.site-row { display: flex; align-items: center; gap: 10px; background: var(--card); border-radius: 8px; padding: 8px 10px; flex-wrap: wrap; }
+.site-row .nm { font-weight: 700; flex: 1 1 220px; }
+.site-row .nm small { display: block; font-weight: 400; color: var(--muted); }
+.site-row.off { opacity: .55; }
+.site-row .ops { display: flex; gap: 4px; flex-wrap: wrap; }
+.th-grid .fld input { width: 100%; }
+#pubLog { margin-top: 8px; white-space: pre-wrap; }
+@media (max-width: 700px) {
+  .form-grid { grid-template-columns: 1fr 1fr; }
+  .form-grid .span3 { grid-column: span 2; }
+  .map { height: 300px; }
+}
+@media (max-width: 460px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .form-grid .span2, .form-grid .span3 { grid-column: span 1; }
+}

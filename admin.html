@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>管理後台｜示範營造 工地環境安全即時監控</title>
+<meta name="theme-color" content="#23252b">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="css/style.css?v=1.0.1">
+<link rel="stylesheet" href="css/admin.css?v=1.0.1">
+</head>
+<body>
+<div class="app admin">
+  <header class="panel admin-head">
+    <div class="brand">
+      <div class="logo-tile"><img src="icons/logo.png" alt="示範營造 Logo"></div>
+      <div class="brand-text">
+        <div class="brand-title"><span id="companyName">示範營造股份有限公司</span><span class="brand-sys">管理後台</span></div>
+        <div class="brand-sub">工地專案 · 系統設定 · 帳號管理</div>
+      </div>
+    </div>
+    <div class="toolbar">
+      <span id="dirtyFlag" class="dirty" hidden>● 有未發佈的變更</span>
+      <span id="whoami" class="small muted"></span>
+      <a class="btn btn-ghost" href="index.html">← 回監控畫面</a>
+      <button class="btn btn-ghost" id="btnLogout" hidden>登出</button>
+    </div>
+  </header>
+
+  <!-- 登入 -->
+  <section class="panel login" id="loginBox">
+    <h2>管理者登入</h2>
+    <label class="fld"><span>帳號</span><input id="lgUser" autocomplete="username"></label>
+    <label class="fld"><span>密碼</span><input id="lgPass" type="password" autocomplete="current-password"></label>
+    <button class="btn btn-accent" id="btnLogin">登入</button>
+    <p id="demoHint" class="demo-hint" hidden></p>
+    <p class="small muted">一般同仁不需登入即可查看監控畫面；本頁僅供管理者新增、修改工地專案與系統設定。</p>
+  </section>
+
+  <!-- 主區 -->
+  <section id="adminMain" hidden>
+    <div id="demoAdminBar" class="demo-hint" hidden>展示版試用中：所有變更只保存在您的瀏覽器（可按「發佈 / 備份 → 在監控畫面預覽草稿」看效果），不會發佈到網站。</div>
+    <nav class="admin-tabs">
+      <button class="tab active" data-tab="sites">🏗 工地專案</button>
+      <button class="tab" data-tab="settings">⚙ 系統設定</button>
+      <button class="tab" data-tab="admins">👤 管理者帳號</button>
+      <button class="tab" data-tab="publish">🚀 發佈 / 備份</button>
+    </nav>
+
+    <!-- 工地專案 -->
+    <div class="tabpane" id="tab-sites">
+      <div class="panel">
+        <div class="col-head"><b>工地專案清單</b><button class="btn btn-accent" id="btnNewSite">＋ 新增工地</button></div>
+        <div id="siteList" class="site-list"></div>
+      </div>
+      <div class="panel" id="siteEditor" hidden>
+        <div class="col-head"><b id="edTitle">新增工地</b><span class="small muted">＊為必填</span></div>
+        <div class="form-grid">
+          <label class="fld span2"><span>工地名稱＊</span><input id="fName" maxlength="40" placeholder="例：新竹科學園區廠房新建工程"></label>
+          <label class="fld"><span>工程編號</span><input id="fCode" maxlength="30"></label>
+          <label class="fld"><span>所在縣市＊（對應氣象署特報）</span><select id="fCounty"></select></label>
+          <label class="fld span2"><span>工地地址</span><input id="fAddr" maxlength="80"></label>
+          <label class="fld"><span>緯度 Lat＊</span><input id="fLat" inputmode="decimal" placeholder="24.7800"></label>
+          <label class="fld"><span>經度 Lon＊</span><input id="fLon" inputmode="decimal" placeholder="121.0100"></label>
+          <label class="fld"><span>工地主任</span><input id="fMgr" maxlength="20"></label>
+          <label class="fld"><span>聯絡電話</span><input id="fPhone" maxlength="20" inputmode="tel"></label>
+          <label class="fld"><span>開工日期</span><input id="fStart" type="date"></label>
+          <label class="fld"><span>預計完工</span><input id="fEnd" type="date"></label>
+          <label class="fld span2"><span>備註</span><input id="fNote" maxlength="120"></label>
+          <label class="chk"><input type="checkbox" id="fEnabled" checked> 顯示於監控畫面（啟用）</label>
+        </div>
+        <div class="map-tools">
+          <input id="fGeoQ" placeholder="輸入地址或地名找座標" class="inp">
+          <button class="btn" id="btnGeoFind">🔍 查座標</button>
+          <button class="btn" id="btnGeoHere">📍 用目前位置</button>
+          <span class="small muted">也可直接在地圖上點選或拖曳標記設定 GPS 座標</span>
+        </div>
+        <div id="map" class="map"></div>
+        <div class="form-actions">
+          <button class="btn btn-accent" id="btnSaveSite">💾 儲存工地</button>
+          <button class="btn btn-ghost" id="btnCancelSite">取消</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 系統設定 -->
+    <div class="tabpane" id="tab-settings" hidden>
+      <div class="panel">
+        <div class="col-head"><b>基本資料</b></div>
+        <div class="form-grid">
+          <label class="fld span2"><span>公司名稱</span><input id="sCompany"></label>
+          <label class="fld"><span>自動更新頻率（分鐘）</span><input id="sRefresh" type="number" min="2" max="60"></label>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="col-head"><b>中央氣象署開放資料 API 金鑰</b><a class="small" href="https://opendata.cwa.gov.tw/user/authkey" target="_blank" rel="noopener">↗ 免費申請金鑰</a></div>
+        <div class="form-grid">
+          <label class="fld span2"><span>授權碼（CWA-xxxx…）</span><input id="sCwaKey" autocomplete="off" placeholder="未填則僅使用 Open-Meteo 模式資料"></label>
+          <div class="fld"><span>&nbsp;</span><button class="btn" id="btnTestKey">測試金鑰</button></div>
+        </div>
+        <p class="small muted">填入後可取得：鄰近自動氣象站與雨量站實測、氣象署有感地震報告、天氣警特報、颱風路徑與暴風圈研判。<br>
+          ⚠ 本系統為純前端網頁，金鑰會隨設定檔公開於網站上；氣象署金鑰為免費、僅供讀取資料，若遭濫用可隨時於氣象署網站重新產生。</p>
+      </div>
+      <div class="panel">
+        <div class="col-head"><b>作業安全研判門檻</b><button class="btn btn-mini" id="btnResetTh">恢復預設值</button></div>
+        <div class="form-grid th-grid" id="thGrid"></div>
+      </div>
+      <div class="form-actions"><button class="btn btn-accent" id="btnSaveSettings">💾 儲存設定</button></div>
+    </div>
+
+    <!-- 管理者帳號 -->
+    <div class="tabpane" id="tab-admins" hidden>
+      <div class="panel">
+        <div class="col-head"><b>管理者帳號</b></div>
+        <table class="data" id="adminTable"></table>
+      </div>
+      <div class="panel">
+        <div class="col-head"><b>新增管理者</b></div>
+        <div class="form-grid">
+          <label class="fld"><span>帳號（英數）</span><input id="nUser" maxlength="20" autocomplete="off"></label>
+          <label class="fld"><span>姓名</span><input id="nName" maxlength="20"></label>
+          <label class="fld"><span>初始密碼（至少 8 碼）</span><input id="nPass" type="password" autocomplete="new-password"></label>
+          <div class="fld"><span>&nbsp;</span><button class="btn btn-accent" id="btnAddAdmin">＋ 新增</button></div>
+        </div>
+        <p class="small muted">新帳號第一次登入時會要求變更密碼。</p>
+      </div>
+      <div class="panel">
+        <div class="col-head"><b>變更我的密碼</b></div>
+        <div class="form-grid">
+          <label class="fld"><span>目前密碼</span><input id="cOld" type="password" autocomplete="current-password"></label>
+          <label class="fld"><span>新密碼（至少 8 碼）</span><input id="cNew" type="password" autocomplete="new-password"></label>
+          <label class="fld"><span>再次輸入新密碼</span><input id="cNew2" type="password" autocomplete="new-password"></label>
+          <div class="fld"><span>&nbsp;</span><button class="btn btn-accent" id="btnChangePw">變更密碼</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 發佈 -->
+    <div class="tabpane" id="tab-publish" hidden>
+      <div class="panel">
+        <div class="col-head"><b>發佈到 GitHub（讓所有同仁看到最新工地設定）</b></div>
+        <div class="form-grid">
+          <label class="fld"><span>GitHub 帳號 / 組織（owner）</span><input id="gOwner" placeholder="自動偵測"></label>
+          <label class="fld"><span>儲存庫名稱（repo）</span><input id="gRepo" placeholder="自動偵測"></label>
+          <label class="fld"><span>分支</span><input id="gBranch" placeholder="main"></label>
+          <label class="fld span3"><span>GitHub 存取權杖（Fine-grained token，只需此儲存庫 Contents 讀寫權限）</span><input id="gToken" type="password" autocomplete="off" placeholder="github_pat_…"></label>
+          <label class="chk"><input type="checkbox" id="gRemember"> 在此裝置記住權杖</label>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-accent" id="btnPublish">🚀 發佈到 GitHub</button>
+          <button class="btn" id="btnPreview">👁 在監控畫面預覽草稿</button>
+          <button class="btn btn-ghost" id="btnDiscard">捨棄本機草稿</button>
+        </div>
+        <div id="pubLog" class="small muted"></div>
+        <p class="small muted">發佈後約 1～2 分鐘 GitHub Pages 會完成更新，同仁重新整理即可看到。權杖只存在您這台裝置，不會寫入網站。<br>
+          ⚠ 本系統的登入驗證在瀏覽器端進行，真正能修改網站內容的是 GitHub 權杖，請妥善保管、勿分享。</p>
+      </div>
+      <div class="panel">
+        <div class="col-head"><b>備份 / 還原</b></div>
+        <div class="form-actions">
+          <button class="btn" id="btnExport">⬇ 下載 config.json</button>
+          <label class="btn">⬆ 匯入 config.json<input type="file" id="fileImport" accept=".json,application/json" hidden></label>
+        </div>
+        <p class="small muted">若不使用權杖發佈，也可下載 config.json 後，手動上傳覆蓋 GitHub 儲存庫中的 data/config.json。</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- 強制變更密碼 -->
+<div class="modal" id="pwModal" hidden>
+  <div class="modal-backdrop"></div>
+  <div class="modal-box" style="width:min(420px,94vw)">
+    <div class="modal-head"><b>首次登入請變更密碼</b></div>
+    <div class="modal-body">
+      <label class="fld"><span>新密碼（至少 8 碼）</span><input id="mNew" type="password" autocomplete="new-password"></label><br>
+      <label class="fld"><span>再次輸入新密碼</span><input id="mNew2" type="password" autocomplete="new-password"></label><br>
+      <button class="btn btn-accent" id="btnMustChange">確認變更</button>
+      <p class="small muted">變更後請到「發佈 / 備份」發佈，其他裝置才會使用新密碼。</p>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="js/core.js?v=1.0.1"></script>
+<script src="js/data.js?v=1.0.1"></script>
+<script src="js/admin.js?v=1.0.1"></script>
+</body>
+</html>

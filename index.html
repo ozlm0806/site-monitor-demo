@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>示範營造｜工地環境安全即時監控</title>
+<meta name="description" content="示範營造股份有限公司 工地環境安全即時監控系統：降雨、熱危害、風速、地震、雷達回波、Windy 圖資與作業安全研判。">
+<meta name="theme-color" content="#23252b">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="工地環境安全即時監控系統">
+<meta property="og:title" content="工地環境安全即時監控系統｜線上展示">
+<meta property="og:description" content="營造廠專屬的工地氣象監控網頁：降雨、熱危害、陣風、地震、颱風暴風圈、雷達回波與 Windy 圖資，自動研判能否吊掛、澆置，一鍵產出工地氣象日報表。手機、電腦都能裝成 APP。">
+<meta property="og:url" content="https://ozlm0806.github.io/site-monitor-demo/">
+<meta property="og:image" content="https://ozlm0806.github.io/site-monitor-demo/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="zh_TW">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="示範工地監控">
+<link rel="stylesheet" href="css/style.css?v=1.0.1">
+</head>
+<body>
+<div id="demoBar" class="demo-bar" hidden><span>🏗 展示版：以臺東兩處示範工地呈現即時資料</span><a id="demoCta" target="_blank" rel="noopener"></a><a href="admin.html">試用管理後台 →</a></div>
+<div id="previewBanner" class="preview-banner" hidden>目前顯示「管理後台本機草稿」預覽（尚未發佈） <button id="btnExitPreview">結束預覽</button></div>
+
+<div class="app">
+  <!-- ===== 標頭 ===== -->
+  <header class="panel header">
+    <div class="brand-area">
+      <div class="brand">
+        <div class="logo-tile"><img src="icons/logo.png" alt="示範營造 Logo"></div>
+        <div class="brand-text">
+          <div class="brand-title"><span id="companyName">示範營造股份有限公司</span><span class="brand-sys">氣象監測</span></div>
+          <div class="brand-sub">氣象 · 降雨 · 熱危害 · 地震</div>
+        </div>
+      </div>
+      <div class="search-row">
+        <label class="fld grow"><span>地點搜尋</span><input id="inpPlace" type="search" placeholder="輸入地名，例：新竹市" enterkeyhint="search"></label>
+        <label class="fld num"><span>緯度 Lat</span><input id="inpLat" inputmode="decimal" placeholder="25.03"></label>
+        <label class="fld num"><span>經度 Lon</span><input id="inpLon" inputmode="decimal" placeholder="121.56"></label>
+        <button id="btnQuery" class="btn btn-accent">查詢</button>
+        <button id="btnGeo" class="btn btn-accent glow">📍 目前位置</button>
+      </div>
+      <div class="station-row">
+        <span class="muted small">鄰近氣象測站（依座標自動偵測）</span>
+        <div id="stationChips" class="chips"></div>
+      </div>
+    </div>
+    <div class="clock-area">
+      <div class="meta small muted"><span id="dataSourceNote"></span>　最後更新 <span id="lastUpdate">--</span></div>
+      <div class="clock"><span id="clockHM">--:--</span><span id="clockS">--</span></div>
+      <div class="toolbar">
+        <button class="btn btn-ghost" id="btnReport">📄 日報表</button>
+        <button class="btn btn-ghost" id="btnWindy">🌀 Windy 圖資</button>
+        <button class="btn btn-ghost" id="btnRefresh">⟳ 重新整理</button>
+        <button class="btn btn-ghost" id="btnInstall" hidden>⬇ 安裝 APP</button>
+        <a class="btn btn-ghost" href="admin.html">🔐 管理</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== 工地切換列 ===== -->
+  <nav class="panel sitebar">
+    <div class="site-current">
+      <div class="site-name" id="siteName">--</div>
+      <div class="site-info small muted" id="siteInfo"></div>
+    </div>
+    <div class="site-buttons" id="siteButtons"></div>
+  </nav>
+
+  <!-- ===== 主內容 ===== -->
+  <main class="grid">
+    <section class="panel card-col" id="cardRain">
+      <div class="col-head"><b>降雨監控</b><span class="small muted" id="rainSrc"></span></div>
+      <div class="metric" id="mRainNow"></div>
+      <div class="metric" id="mRain3h"></div>
+      <div class="metric" id="mRainDay"></div>
+      <div class="metric" id="mRain12f"></div>
+    </section>
+    <section class="panel card-col" id="cardTemp">
+      <div class="col-head"><b>氣溫 / 熱危害</b><span class="small muted" id="tempSrc"></span></div>
+      <div class="metric" id="mTemp"></div>
+      <div class="metric" id="mRh"></div>
+      <div class="metric" id="mFeel"></div>
+      <div class="metric" id="mHI"></div>
+    </section>
+    <section class="panel card-col" id="cardWind">
+      <div class="col-head"><b>風速 / 陣風</b><span class="small muted" id="windSrc"></span></div>
+      <div class="metric" id="mWind"></div>
+      <div class="metric" id="mGust24"></div>
+      <div class="metric" id="mGustNow"></div>
+      <div class="metric" id="mGust12f"></div>
+    </section>
+    <section class="panel card-col" id="cardQuake">
+      <div class="col-head"><b>地震監控</b><span class="small muted" id="quakeSrc"></span></div>
+      <div class="metric" id="mQMag"></div>
+      <div class="metric" id="mQInt"></div>
+      <div class="metric" id="mQDist"></div>
+      <div class="metric" id="mQCount"></div>
+    </section>
+
+    <section class="panel heat-panel">
+      <div class="col-head"><b>熱指數表</b><span class="small muted" id="heatNote"></span></div>
+      <div class="heat-wrap"><table class="heat" id="heatTable"></table></div>
+      <div class="heat-legend small">
+        <span class="lv lv1">第一級 27–32</span><span class="lv lv2">第二級 32–41</span><span class="lv lv3">第三級 41–54</span><span class="lv lv4">第四級 ≥54</span>
+      </div>
+    </section>
+
+    <section class="panel radar-panel">
+      <div class="col-head">
+        <div class="tabs" role="tablist">
+          <button class="tab active" data-map="radar">雷達回波</button>
+          <button class="tab" data-map="windy">Windy</button>
+        </div>
+        <span class="small muted" id="radarNote">氣象署合成回波 · 點圖可放大</span>
+      </div>
+      <div class="map-box">
+        <img id="radarImg" class="radar-img" alt="氣象署雷達回波圖" referrerpolicy="no-referrer">
+        <div id="windyBox" class="windy-box" hidden>
+          <div class="windy-layers" id="windyLayersMini"></div>
+          <iframe id="windyMini" title="Windy" allowfullscreen></iframe>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel safety-panel">
+      <div class="col-head"><b>作業安全研判</b><span class="small muted">門檻為一般參考值，實際請依現場規定與監造指示</span></div>
+      <div class="safety-grid" id="safetyGrid"></div>
+    </section>
+
+    <section class="panel trend-panel" id="trendPanel">
+      <div class="col-head"><b>逐時趨勢</b><span class="small muted">過去 12 ＋ 未來 12 小時 · 點面板看明細</span></div>
+      <div class="tabs small-tabs" id="trendTabs">
+        <button class="tab active" data-k="rain">雨量</button>
+        <button class="tab" data-k="gust">陣風</button>
+        <button class="tab" data-k="temp">氣溫</button>
+      </div>
+      <div class="trend-sub small muted" id="trendSub"></div>
+      <div class="trend" id="trendChart"></div>
+      <div class="trend-axis small muted" id="trendAxis"></div>
+    </section>
+  </main>
+
+  <!-- ===== 底部警示列 ===== -->
+  <footer class="panel footer">
+    <div class="foot-date" id="footDate">--</div>
+    <div class="ticker" id="ticker"><div class="ticker-track" id="tickerTrack"></div></div>
+    <button class="btn btn-mini" id="btnMute">🔔 靜音</button>
+    <button class="btn btn-mini" id="btnTickerClose">關閉</button>
+  </footer>
+  <div class="disclaimer small muted">資料來源：中央氣象署開放資料、Open-Meteo、USGS、Windy。數值會隨時更新，停工與復工仍依現場實測、契約規定與監造指示。 © <span id="footCompany">示範營造股份有限公司</span></div>
+</div>
+
+<!-- ===== 共用彈出視窗 ===== -->
+<div class="modal" id="modal" hidden>
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-box">
+    <div class="modal-head"><b id="modalTitle"></b><div class="modal-tools" id="modalTools"></div><button class="btn btn-mini" data-close>✕ 關閉</button></div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="js/core.js?v=1.0.1"></script>
+<script src="js/data.js?v=1.0.1"></script>
+<script src="js/report.js?v=1.0.1"></script>
+<script src="js/app.js?v=1.0.1"></script>
+</body>
+</html>
