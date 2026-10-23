@@ -32,7 +32,8 @@
       "user": "demo",
       "password": "demo1234",
       "contactText": "想要貴公司專屬的工地監控系統？歡迎洽詢客製化建置",
-      "contactUrl": "https://ozlm0806.github.io/eng-tools-shop/"
+      "contactUrl": "https://ozlm0806.github.io/eng-tools-shop/",
+      "counter": "ozlm0806-site-monitor-demo/views"
     }
   },
   "admins": [

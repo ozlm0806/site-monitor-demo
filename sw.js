@@ -1,5 +1,5 @@
 /* Service Worker：快取網頁外殼，讓 APP 可安裝並快速開啟；氣象資料一律即時向網路取得 */
-const CACHE = 'klwsdemo-v1.0.1';
+const CACHE = 'klwsdemo-v1.0.2';
 const SHELL = [
   './', './index.html', './admin.html', './css/style.css', './css/admin.css',
   './js/core.js', './js/data.js', './js/report.js', './js/app.js', './js/admin.js',

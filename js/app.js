@@ -510,6 +510,26 @@ function setupPWA() {
   window.addEventListener('appinstalled', () => { $('#btnInstall').hidden = true; KL.toast('已安裝 APP'); });
 }
 
+/* ================= 展示版瀏覽人次 =================
+   計數服務 Abacus（abacus.jasoncameron.dev，免費免註冊）。同一個分頁工作階段只算一次，
+   重新整理或切換工地不重複計算；本機測試只讀取不累加。失敗時不顯示，不影響主畫面。 */
+async function countView(key) {
+  const SS_COUNTED = 'klwsdemo_view_counted';
+  let counted = false;
+  try { counted = sessionStorage.getItem(SS_COUNTED) === '1'; } catch (e) { /* 無法使用 sessionStorage 時視為新瀏覽 */ }
+  const local = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+  const verb = counted || local ? 'get' : 'hit';
+  try {
+    const r = await fetch(`https://abacus.jasoncameron.dev/${verb}/${key}`, { cache: 'no-store' });
+    if (!r.ok) return;
+    const n = (await r.json()).value;
+    if (typeof n !== 'number' || n < 0) return;
+    if (verb === 'hit') { try { sessionStorage.setItem(SS_COUNTED, '1'); } catch (e) { /* 略過 */ } }
+    $('#demoViews').textContent = `👀 已瀏覽 ${n.toLocaleString('zh-TW')} 人次`;
+    $('#demoViews').hidden = false;
+  } catch (e) { /* 計數服務無法連線時不顯示 */ }
+}
+
 /* ================= 啟動 ================= */
 (async function init() {
   tick(); setInterval(tick, 1000);
@@ -525,6 +545,7 @@ function setupPWA() {
     $('#demoBar').hidden = false;
     if (demo.contactUrl) { $('#demoCta').href = demo.contactUrl; $('#demoCta').textContent = demo.contactText || '洽詢客製化'; }
     else $('#demoCta').remove();
+    if (demo.counter) countView(demo.counter);
   }
   $('#companyName').textContent = App.cfg.company || '示範營造股份有限公司';
   $('#footCompany').textContent = App.cfg.company || '示範營造股份有限公司';

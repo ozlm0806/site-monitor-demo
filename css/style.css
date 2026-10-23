@@ -156,6 +156,7 @@ th.cur { color: var(--accent) !important; }
 .demo-bar { display: flex; gap: 8px 18px; justify-content: center; align-items: center; flex-wrap: wrap; padding: 8px 12px; background: linear-gradient(90deg, #123460, #1d4f8a); color: #fff; font-size: 14px; text-align: center; }
 .demo-bar a { color: #fff; font-weight: 700; background: #ff7a1a; padding: 4px 12px; border-radius: 16px; text-decoration: none; }
 .demo-bar a + a { background: transparent; border: 1px solid rgba(255,255,255,.6); }
+.demo-views { background: rgba(255,255,255,.14); padding: 3px 12px; border-radius: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .demo-hint { background: rgba(255, 122, 26, .15); border: 1px solid #ff7a1a; border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.7; margin: 0 0 10px; }
 
 /* 預覽橫幅 */
